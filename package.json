@@ -1,0 +1,19 @@
+{
+  "name": "hangman-game-backend",
+  "version": "1.0.0",
+  "description": "this is the backend version of the hangman-game",
+  "license": "ISC",
+  "author": "codingninja",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongoose": "^8.19.1",
+    "morgan": "^1.10.1"
+  }
+}
