@@ -1,12 +1,14 @@
-const { GoogleGenAI } = require("@google/genai");
+require("dotenv").config({ path: "config.env" });
 
-const ai = new GoogleGenAI({});
+const { OpenAI } = require("openai");
+const Words = require("../models/wordsModel");
 
-async function main() {
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: `
-    You are an AI word generator for a Hangman game.
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const prompt = `
+You are an AI word generator for a Hangman game.
 
 Your job is to generate **a total of 120 JSON objects** — each representing a word entry for the game.
 
@@ -24,7 +26,7 @@ Each object should have the following structure:
 ["animal", "sports", "tv shows", "movies", "capital cities", "countries"]
 
 **Rules for generation**:
-- Create exactly **20 words per category** (total = 120 words).
+- Create exactly **5 words per category** (total = 30 words).
 - Each category must contain a **balanced difficulty**:
   - ~7 easy
   - ~7 medium
@@ -49,14 +51,32 @@ Your final output must look like this:
     "category": "sports",
     "difficulty": "easy",
     "hint": "Game played with a ball and a hoop"
-  },
-  ...
+  }
 ]
-    
-    `,
-  });
+`;
 
-  console.log(response);
-}
+const generateWordPerCategory = async () => {
+  try {
+    const response = await client.responses.create({
+      model: "gpt-4.1-mini", // or "gpt-4.1" if you have access
+      input: prompt,
+    });
 
-await main();
+    const text = response.output[0].content[0].text;
+    console.log("📝 Raw response:", text);
+
+    // Parse JSON
+    const jsonStart = text.indexOf("[");
+    const jsonEnd = text.lastIndexOf("]");
+    const jsonStr = text.slice(jsonStart, jsonEnd + 1);
+    const words = JSON.parse(jsonStr);
+
+    // await Words.insertMany(words);
+    console.log(`✅ Successfully generated and saved ${words.length} words`);
+  } catch (error) {
+    console.error("❌ Error generating words:", error.message);
+    console.log(error);
+  }
+};
+
+module.exports = { generateWordPerCategory };

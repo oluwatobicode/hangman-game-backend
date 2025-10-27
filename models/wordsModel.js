@@ -8,8 +8,8 @@ const wordsSchema = new mongoose.Schema(
       unique: true,
       uppercase: true,
       trim: true,
-      minLength: 4,
-      maxLength: 10,
+      // minLength: 3,
+      // maxLength: 10,
     },
     category: {
       type: String,

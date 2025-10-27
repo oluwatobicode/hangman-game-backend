@@ -1,30 +1,8 @@
 const Words = require("../models/wordsModel");
-const { GoogleGenAI } = require("@google/genai");
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
-const getWords = async () => {
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: `Generate ${WORDS_PER_CATEGORY} random words for Hangman game in category: ${category}.
-
-Rules:
-- Single words only (no spaces/hyphens)
-- 4-10 letters long
-- Common enough to guess
-- Family-friendly
-- Variety in difficulty
-
-Return as comma-separated list, e.g: ELEPHANT,TIGER,PENGUIN`,
-  });
-
-  console.log(response.text);
-};
+const { generateWordPerCategory } = require("../services/aiGenWord");
 
 exports.createWord = async (req, res, next) => {
   const newWord = await Words.create(req.body);
-
-  // await getWords();
 
   try {
     res.status(200).json({
@@ -82,4 +60,22 @@ exports.getWordByCategory = async (req, res, next) => {
   }
 
   next();
+};
+
+exports.createWordWithAI = async (req, res, next) => {
+  try {
+    const result = await generateWordPerCategory();
+
+    res.status(200).json({
+      status: "success",
+      message: "Words generated successfully",
+      data: result,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
 };
