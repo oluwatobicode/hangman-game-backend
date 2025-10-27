@@ -33,6 +33,17 @@ const userSchema = new mongoose.Schema({
     default: false,
     select: false,
   },
+  totalWins: {
+    type: String,
+    default: 0,
+  },
+  totalLoses: {
+    type: String,
+    default: 0,
+  },
+  lastLogin: {
+    type: Date,
+  },
 });
 
 userSchema.pre(/^find/, function (next) {

@@ -9,6 +9,7 @@ const app = express();
 // this is use to parse json body in request
 app.use(express.json());
 
+// development logging
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }

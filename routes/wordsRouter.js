@@ -4,6 +4,6 @@ const wordsController = require("../controllers/wordsController");
 const router = express.Router();
 
 router.post("/", wordsController.createWord);
-router.get("/", wordsController.getWords);
+router.get("/", wordsController.getWordByCategory);
 
 module.exports = router;
