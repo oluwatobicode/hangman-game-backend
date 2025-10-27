@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
+const bcrypt = require("bcrypt");
 
-const userModel = new mongoose.Schema({
-  name: {
+const userSchema = new mongoose.Schema({
+  username: {
     type: String,
     required: [true, "A username is required!"],
     unique: true,
@@ -12,11 +12,13 @@ const userModel = new mongoose.Schema({
     type: String,
     minLength: 8,
     required: [true, "A password is required!"],
+    select: false,
   },
   confirmPassword: {
     type: String,
+    required: [true, "Please confirm your password!"],
     validate: {
-      validator: (el) => {
+      validator: function (el) {
         return el === this.password;
       },
       message: "Your passwords are not the same!",
@@ -26,7 +28,26 @@ const userModel = new mongoose.Schema({
     type: String,
     default: "default.jpg",
   },
+  active: {
+    type: Boolean,
+    default: false,
+    select: false,
+  },
 });
 
-const User = mongoose.model("User", userModel);
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  this.password = await bcrypt.hash(this.password, 12);
+  this.confirmPassword = undefined;
+
+  next();
+});
+
+const User = mongoose.model("User", userSchema);
 module.exports = User;
