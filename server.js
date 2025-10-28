@@ -1,6 +1,7 @@
 const app = require("./app");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+require("./cron/wordGenerator");
 
 dotenv.config({ path: "./config.env" });
 

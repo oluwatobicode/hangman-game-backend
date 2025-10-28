@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
+  // auth
   username: {
     type: String,
     required: [true, "A username is required!"],
@@ -33,14 +34,40 @@ const userSchema = new mongoose.Schema({
     default: false,
     select: false,
   },
+
+  // game-stats
   totalWins: {
-    type: String,
+    type: Number,
     default: 0,
   },
   totalLoses: {
-    type: String,
+    type: Number,
     default: 0,
   },
+  currentStreak: {
+    type: Number,
+    default: 0,
+  },
+  bestStreak: {
+    type: Number,
+    default: 0,
+  },
+
+  // settings
+  settings: {
+    soundEnabled: { type: Boolean, default: true },
+    volume: {
+      type: Number,
+      default: 0.7,
+    },
+    preferredDifficulty: {
+      type: String,
+      default: "easy",
+      enum: ["easy", "medium", "hard"],
+    },
+  },
+
+  // experimenting
   lastLogin: {
     type: Date,
   },
