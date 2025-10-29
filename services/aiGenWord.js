@@ -58,7 +58,7 @@ Your final output must look like this:
 const generateWordPerCategory = async () => {
   try {
     const response = await client.responses.create({
-      model: "gpt-4.1-mini", // or "gpt-4.1" if you have access
+      model: "gpt-4o-mini", // or "gpt-4.1" if you have access
       input: prompt,
     });
 
@@ -78,5 +78,13 @@ const generateWordPerCategory = async () => {
     console.log(error);
   }
 };
+
+// const generateWordPerCategory = async (req, res, next) => {
+//   try {
+//     const response = new GoogleGenAi({
+//       te,
+//     });
+//   } catch (error) {}
+// };
 
 module.exports = { generateWordPerCategory };

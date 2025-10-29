@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.post("/", wordsController.createWord);
 router.get("/", wordsController.getWordByCategory);
+// router.post("/ai-generate-word", wordsController.getWordByCategory);
 
 module.exports = router;

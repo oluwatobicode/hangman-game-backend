@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 
 // routes handler
 const userRoutes = require("./routes/userRoutes");
@@ -17,7 +18,9 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-app.use("/api/v1/users", userRoutes);
+app.use(cookieParser());
+
+app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/words", wordsRoutes);
 app.use("/api/v1/achievements", achievementsRouter);
 app.use("/api/v1/settings", settingsRouter);

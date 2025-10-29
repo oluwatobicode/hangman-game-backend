@@ -4,6 +4,8 @@ const { generateWordPerCategory } = require("../services/aiGenWord");
 exports.createWord = async (req, res, next) => {
   const newWord = await Words.create(req.body);
 
+  await generateWordPerCategory();
+
   try {
     res.status(201).json({
       status: "success",
