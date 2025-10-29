@@ -5,7 +5,7 @@ exports.createWord = async (req, res, next) => {
   const newWord = await Words.create(req.body);
 
   try {
-    res.status(200).json({
+    res.status(201).json({
       status: "success",
       data: {
         newWord,
@@ -32,10 +32,10 @@ exports.getWordByCategory = async (req, res, next) => {
       });
     }
 
-    // Get random word using aggregation
+    // this would helping in getting a random word using aggregation
     const [word] = await Words.aggregate([
       { $match: { category } },
-      { $sample: { size: 1 } }, // MongoDB's random selector
+      { $sample: { size: 1 } }, // this is MongoDB's random selector
     ]);
 
     // Update usage stats

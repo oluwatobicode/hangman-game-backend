@@ -38,7 +38,6 @@ const achievementSchema = new mongoose.Schema(
     requirement: {
       type: mongoose.Schema.Types.Mixed,
       require: true,
-      enum: [""],
     },
     rarity: {
       type: String,
