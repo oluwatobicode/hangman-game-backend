@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
+const AsyncHandler = require("express-async-handler");
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET_KEY, {
@@ -41,6 +42,7 @@ exports.signUp = async (req, res) => {
       status: "fail",
       message: error.message,
     });
+    1;
   }
 };
 
@@ -91,7 +93,7 @@ Deny access if any check fails.
 
 // 1)Create a middleware that runs before protected routes.
 
-exports.protectedRoutes = async (req, res, next) => {
+exports.protectedRoutes = AsyncHandler(async (req, res, next) => {
   // 1) Check for a token (from cookie or authorization header).
   let token;
 
@@ -132,14 +134,11 @@ exports.protectedRoutes = async (req, res, next) => {
   req.user = currentUser;
 
   next();
-};
+});
 
-exports.loggedOut = async (req, res, next) => {
+exports.loggedOut = AsyncHandler(async (req, res, next) => {
   try {
-    res.cookie("jwt", "loggedout", {
-      expires: new Date(Date.now() + 1),
-      httpOnly: true,
-    });
+    res.clearCookie("jwt");
 
     res.status(200).json({
       status: "success",
@@ -152,4 +151,4 @@ exports.loggedOut = async (req, res, next) => {
       message: error.message,
     });
   }
-};
+});
