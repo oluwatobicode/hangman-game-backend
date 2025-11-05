@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema({
   },
   confirmPassword: {
     type: String,
-    required: [true, "Please confirm your password!"],
     validate: {
       validator: function (el) {
         return el === this.password;
@@ -58,7 +57,7 @@ const userSchema = new mongoose.Schema({
     {
       achievementId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "achievements",
+        ref: "Achievement",
       },
       unlockedAt: {
         type: Date,
@@ -69,9 +68,21 @@ const userSchema = new mongoose.Schema({
 
   achievementProgress: {
     gamesWithoutHint: { type: Number, default: 0 },
+    perfectGames: { type: Number, default: 0 },
     categoryWins: {
       animal: { type: Number, default: 0 },
       sports: { type: Number, default: 0 },
+      movies: { type: Number, default: 0 },
+      science: { type: Number, default: 0 }, // Add this
+      history: { type: Number, default: 0 }, // Add this
+      tv_shows: { type: Number, default: 0 },
+      countries: { type: Number, default: 0 },
+      capital_cities: { type: Number, default: 0 },
+    },
+    difficultyWins: {
+      easy: { type: Number, default: 0 },
+      medium: { type: Number, default: 0 },
+      hard: { type: Number, default: 0 },
     },
   },
 

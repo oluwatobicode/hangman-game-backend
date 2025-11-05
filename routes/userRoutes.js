@@ -4,10 +4,17 @@ const express = require("express");
 
 const router = express.Router();
 
-router.post("/signup", authController.signUp);
-router.post("/login", authController.login);
-router.post("/logout", authController.loggedOut);
 // user-profile-section
-router.get("/me", userController.getMyProfile);
+router.get(
+  "/:userID/profile",
+  authController.protectedRoutes,
+  userController.getMyProfile
+);
+
+// router.get(
+//     "/:userID/achievements",
+//     authController.protectedRoutes,
+//     userController.getUserAchievements,
+// )
 
 module.exports = router;

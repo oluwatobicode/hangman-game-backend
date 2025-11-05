@@ -1,7 +1,7 @@
 require("dotenv").config({ path: "./config.env" });
 const mongoose = require("mongoose");
-const Achievement = require("../models/achievementModel"); // adjust path as needed
-const achievements = require("../data/achievements"); // import your generated array
+const Achievement = require("../models/achievementModel");
+const achievements = require("../data/achievements");
 
 const DB = process.env.DATABASE.replace(
   "<db_password>",
@@ -15,12 +15,17 @@ mongoose
 
 const seedAchievements = async () => {
   try {
-    await Achievement.deleteMany(); // optional: clears old data
+    // Delete existing achievements
+    await Achievement.deleteMany({});
+    console.log("Existing achievements deleted");
+
+    // Insert new achievements
     await Achievement.insertMany(achievements);
-    console.log("🎉 Achievements successfully uploaded!");
+    console.log(`${achievements.length} achievements successfully seeded!`);
+
     process.exit();
   } catch (error) {
-    console.error("⚠️ Error seeding data:", error);
+    console.error("Error seeding achievements:", error);
     process.exit(1);
   }
 };

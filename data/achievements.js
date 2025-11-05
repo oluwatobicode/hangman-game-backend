@@ -9,6 +9,7 @@ const achievements = [
     requirement: { wins: 1 },
     rarity: "common",
     points: 10,
+    isActive: true,
   },
   {
     achievementId: "five-wins",
@@ -19,6 +20,7 @@ const achievements = [
     requirement: { wins: 5 },
     rarity: "common",
     points: 15,
+    isActive: true,
   },
   {
     achievementId: "ten-wins",
@@ -29,6 +31,7 @@ const achievements = [
     requirement: { wins: 10 },
     rarity: "rare",
     points: 25,
+    isActive: true,
   },
   {
     achievementId: "fifty-wins",
@@ -39,6 +42,7 @@ const achievements = [
     requirement: { wins: 50 },
     rarity: "epic",
     points: 50,
+    isActive: true,
   },
   {
     achievementId: "hundred-wins",
@@ -49,6 +53,7 @@ const achievements = [
     requirement: { wins: 100 },
     rarity: "legendary",
     points: 100,
+    isActive: true,
   },
 
   // 🔥 STREAKS
@@ -61,6 +66,7 @@ const achievements = [
     requirement: { streak: 3 },
     rarity: "common",
     points: 15,
+    isActive: true,
   },
   {
     achievementId: "5-streak",
@@ -71,6 +77,7 @@ const achievements = [
     requirement: { streak: 5 },
     rarity: "rare",
     points: 25,
+    isActive: true,
   },
   {
     achievementId: "10-streak",
@@ -81,6 +88,7 @@ const achievements = [
     requirement: { streak: 10 },
     rarity: "epic",
     points: 50,
+    isActive: true,
   },
   {
     achievementId: "20-streak",
@@ -91,18 +99,20 @@ const achievements = [
     requirement: { streak: 20 },
     rarity: "legendary",
     points: 100,
+    isActive: true,
   },
 
-  // 📚 CATEGORY
+  // 📚 CATEGORY - ✅ FIXED: Corrected category names to match your user model
   {
     achievementId: "animals-master",
     name: "Animal Whisperer",
     description: "Win 5 games in the 'Animals' category.",
     icon: "🐾",
     type: "category",
-    requirement: { category: "animals", wins: 5 },
+    requirement: { category: "animal", wins: 5 }, // ✅ FIXED: was "animals"
     rarity: "common",
     points: 15,
+    isActive: true,
   },
   {
     achievementId: "science-genius",
@@ -110,9 +120,10 @@ const achievements = [
     description: "Win 5 games in the 'Science' category.",
     icon: "🔬",
     type: "category",
-    requirement: { category: "animals", wins: 5 },
+    requirement: { category: "science", wins: 5 }, // ✅ FIXED: was "animals" (copy-paste error)
     rarity: "rare",
     points: 20,
+    isActive: true,
   },
   {
     achievementId: "sports-fanatic",
@@ -123,6 +134,7 @@ const achievements = [
     requirement: { category: "sports", wins: 5 },
     rarity: "common",
     points: 15,
+    isActive: true,
   },
   {
     achievementId: "history-buff",
@@ -130,9 +142,10 @@ const achievements = [
     description: "Win 5 games in the 'History' category.",
     icon: "🏛️",
     type: "category",
-    requirement: { category: "History", wins: 5 },
+    requirement: { category: "history", wins: 5 }, // ✅ FIXED: was "History" (should be lowercase)
     rarity: "rare",
     points: 25,
+    isActive: true,
   },
   {
     achievementId: "entertainment-guru",
@@ -143,16 +156,18 @@ const achievements = [
     requirement: { category: "movies", wins: 5 },
     rarity: "rare",
     points: 20,
+    isActive: true,
   },
   {
     achievementId: "category-collector",
     name: "Category Collector",
     description: "Win at least one game in every category.",
     icon: "📚",
-    type: "category",
+    type: "special", // ✅ CHANGED: This needs special handling, not "category" type
     requirement: { allCategoriesCompleted: true },
     rarity: "epic",
     points: 50,
+    isActive: true,
   },
 
   // 🚫 NO HINT
@@ -165,6 +180,7 @@ const achievements = [
     requirement: { noHintWins: 1 },
     rarity: "rare",
     points: 20,
+    isActive: true,
   },
   {
     achievementId: "no-hint-master",
@@ -175,6 +191,7 @@ const achievements = [
     requirement: { noHintWins: 10 },
     rarity: "epic",
     points: 60,
+    isActive: true,
   },
   {
     achievementId: "no-hint-legend",
@@ -185,6 +202,7 @@ const achievements = [
     requirement: { noHintWins: 25 },
     rarity: "legendary",
     points: 100,
+    isActive: true,
   },
 
   // 💪 DIFFICULTY
@@ -197,6 +215,7 @@ const achievements = [
     requirement: { difficulty: "easy", wins: 10 },
     rarity: "common",
     points: 10,
+    isActive: true,
   },
   {
     achievementId: "medium-wins",
@@ -207,6 +226,7 @@ const achievements = [
     requirement: { difficulty: "medium", wins: 10 },
     rarity: "rare",
     points: 25,
+    isActive: true,
   },
   {
     achievementId: "hard-wins",
@@ -217,6 +237,7 @@ const achievements = [
     requirement: { difficulty: "hard", wins: 10 },
     rarity: "epic",
     points: 50,
+    isActive: true,
   },
   {
     achievementId: "impossible-win",
@@ -227,6 +248,7 @@ const achievements = [
     requirement: { difficulty: "impossible", wins: 1 },
     rarity: "legendary",
     points: 100,
+    isActive: true,
   },
 
   // ⏱️ SPEED
@@ -239,6 +261,7 @@ const achievements = [
     requirement: { timeLimit: 30 },
     rarity: "rare",
     points: 25,
+    isActive: true,
   },
   {
     achievementId: "speedster",
@@ -249,6 +272,7 @@ const achievements = [
     requirement: { timeLimit: 60, wins: 5 },
     rarity: "epic",
     points: 50,
+    isActive: true,
   },
   {
     achievementId: "lightning-fast",
@@ -259,6 +283,7 @@ const achievements = [
     requirement: { timeLimit: 60, wins: 10 },
     rarity: "legendary",
     points: 80,
+    isActive: true,
   },
 
   // 💯 PERFECT GAMES
@@ -271,6 +296,7 @@ const achievements = [
     requirement: { mistakes: 0 },
     rarity: "rare",
     points: 25,
+    isActive: true,
   },
   {
     achievementId: "flawless-5",
@@ -281,6 +307,7 @@ const achievements = [
     requirement: { mistakes: 0, wins: 5 },
     rarity: "epic",
     points: 50,
+    isActive: true,
   },
   {
     achievementId: "flawless-10",
@@ -291,6 +318,7 @@ const achievements = [
     requirement: { mistakes: 0, wins: 10 },
     rarity: "legendary",
     points: 100,
+    isActive: true,
   },
 
   // 🧩 SPECIAL ACHIEVEMENTS
@@ -303,6 +331,7 @@ const achievements = [
     requirement: { losses: 1 },
     rarity: "common",
     points: 5,
+    isActive: true,
   },
   {
     achievementId: "comeback-king",
@@ -313,6 +342,7 @@ const achievements = [
     requirement: { comebackWin: true },
     rarity: "rare",
     points: 30,
+    isActive: true,
   },
   {
     achievementId: "night-owl",
@@ -323,6 +353,7 @@ const achievements = [
     requirement: { playTime: "midnight" },
     rarity: "rare",
     points: 15,
+    isActive: true,
   },
   {
     achievementId: "early-bird",
@@ -333,6 +364,7 @@ const achievements = [
     requirement: { playTime: "morning" },
     rarity: "rare",
     points: 15,
+    isActive: true,
   },
   {
     achievementId: "loyal-player",
@@ -343,6 +375,7 @@ const achievements = [
     requirement: { activeDays: 7 },
     rarity: "rare",
     points: 25,
+    isActive: true,
   },
   {
     achievementId: "veteran",
@@ -353,6 +386,7 @@ const achievements = [
     requirement: { gamesPlayed: 200 },
     rarity: "epic",
     points: 60,
+    isActive: true,
   },
   {
     achievementId: "community-player",
@@ -363,6 +397,7 @@ const achievements = [
     requirement: { versus: true },
     rarity: "rare",
     points: 30,
+    isActive: true,
   },
   {
     achievementId: "all-rounder",
@@ -373,6 +408,7 @@ const achievements = [
     requirement: { achievementsUnlocked: 25 },
     rarity: "legendary",
     points: 100,
+    isActive: true,
   },
 ];
 

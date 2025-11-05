@@ -131,6 +131,8 @@ exports.protectedRoutes = AsyncHandler(async (req, res, next) => {
     });
   }
 
+  console.log(req.user);
+
   req.user = currentUser;
 
   next();
