@@ -2,13 +2,9 @@ const Words = require("../models/wordsModel");
 const User = require("../models/userModel");
 const Achievements = require("../models/achievementModel");
 const AsyncHandler = require("express-async-handler");
-const uuid = require("uuid");
-const { generateWordPerCategory } = require("../services/aiGenWord");
 
 exports.createWord = async (req, res, next) => {
   const newWord = await Words.create(req.body);
-
-  await generateWordPerCategory();
 
   try {
     res.status(201).json({
@@ -53,7 +49,6 @@ exports.createGame = AsyncHandler(async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: {
-        // gameId: uuid.v4(),
         word: word.word,
         id: word._id,
         category: word.category,
@@ -141,15 +136,13 @@ const checkAchievements = async (user, gameData) => {
     }
 
     if (unlocked) {
-      // Add to user's unlocked achievements
       user.unlockedAchievements.push({
         achievementId: achievement._id,
         unlockedAt: new Date(),
       });
 
-      // Return achievement details to show to user
       newlyUnlocked.push({
-        achievementId: achievement.achievementId, // This is the string ID
+        achievementId: achievement.achievementId,
         name: achievement.name,
         description: achievement.description,
         icon: achievement.icon,
@@ -188,6 +181,10 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
       user.totalWins += 1;
       user.currentStreak += 1;
       user.bestStreak = Math.max(user.bestStreak, user.currentStreak);
+      user.winRate = (
+        (user.totalWins / (user.totalWins + user.totalLoses)) *
+        100
+      ).toFixed(1);
 
       // update category wins
       user.achievementProgress.categoryWins[gameData.category] =
@@ -213,6 +210,10 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
       user.totalLoses += 1;
       user.currentStreak = 0;
       user.achievementProgress.gamesWithoutHint = 0;
+      user.winRate = (
+        (user.totalWins / (user.totalWins + user.totalLoses)) *
+        100
+      ).toFixed(1);
     }
 
     console.log("hi i am reaching here");
@@ -242,13 +243,11 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
         totalLoses: user.totalLoses,
         currentStreak: user.currentStreak,
         bestStreak: user.bestStreak,
-        winRate: (
-          (user.totalWins / (user.totalWins + user.totalLoses)) *
-          100
-        ).toFixed(1),
+        winRate: user.winRate,
       },
       newAchievements: newAchievements,
       rank: 1,
+      score: user.totalWins * 15 + (user.unlockedAchievements.length || 0) * 5,
       totalAchievements: user.unlockedAchievements.length,
     });
   } catch (error) {
@@ -261,140 +260,34 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
   }
 });
 
-/* 
-
-exports.endGame = async (req, res) => {
-  const { gameId, won, usedHint, wrongGuesses, duration } = req.body;
-  const userId = req.userId;
-
+exports.leaderboard = AsyncHandler(async (req, res) => {
   try {
-    // 1. Get game session
-    const gameData = JSON.parse(await redis.get(`game:${gameId}`));
+    const allUsers = await User.find({})
+      .sort({
+        score: -1,
+        totalWins: -1,
+      })
+      .select("username rank score totalWins")
+      .lean();
 
-    if (!gameData || gameData.userId !== userId) {
-      return res.status(400).json({ error: "Invalid game" });
-    }
-
-    // 2. Get user
-    const user = await User.findById(userId);
-
-    // 3. Update user stats
-    if (won) {
-      user.totalWins += 1;
-      user.currentStreak += 1;
-      user.bestStreak = Math.max(user.bestStreak, user.currentStreak);
-      user.guessedWords.push(gameData.word);
-
-      // Update category wins
-      user.achievementProgress.categoryWins[gameData.category] =
-        (user.achievementProgress.categoryWins[gameData.category] || 0) + 1;
-
-      // Update difficulty wins
-      user.achievementProgress.difficultyWins[gameData.difficulty] =
-        (user.achievementProgress.difficultyWins[gameData.difficulty] || 0) + 1;
-
-      // Track hint usage
-      if (!usedHint) {
-        user.achievementProgress.gamesWithoutHint += 1;
+    let currentRank = 1;
+    const rankedUsers = allUsers.map((user, index) => {
+      if (
+        index > 0 &&
+        user.score === allUsers[index - 1].score &&
+        user.totalWins === allUsers[index - 1].totalWins
+      ) {
+        currentRank = index - 1;
       } else {
-        user.achievementProgress.gamesWithoutHint = 0; // Reset counter
+        currentRank = index + 1;
       }
-
-      // Track perfect games
-      if (wrongGuesses === 0) {
-        user.achievementProgress.perfectGames += 1;
-      }
-    } else {
-      user.totalLosses += 1;
-      user.currentStreak = 0;
-      user.achievementProgress.gamesWithoutHint = 0;
-    }
-
-    // 4. Check for new achievements
-    const newAchievements = await checkAchievements(user, {
-      won,
-      duration,
-      wrongGuesses,
-    });
-
-    // 5. Save user
-    await user.save();
-
-    // 6. Update leaderboard (if using Redis)
-    if (won) {
-      await redis.zadd("leaderboard:wins", user.totalWins, user.username);
-      await redis.zadd(
-        "leaderboard:achievements",
-        user.unlockedAchievements.length,
-        user.username
-      );
-    }
-
-    // 7. Save game history (optional but recommended)
-    await GameHistory.create({
-      userId,
-      wordId: gameData.wordId,
-      word: gameData.word,
-      category: gameData.category,
-      difficulty: gameData.difficulty,
-      won,
-      usedHint,
-      wrongGuesses,
-      duration,
-      playedAt: new Date(),
-    });
-
-    // 8. Update word usage stats
-    await Word.findByIdAndUpdate(gameData.wordId, {
-      $inc: { usedCount: 1 },
-      lastUsedAt: new Date(),
-    });
-
-    // 9. Delete game session
-    await redis.del(`game:${gameId}`);
-
-    // 10. Get user's rank
-    const rank = await redis.zrevrank("leaderboard:wins", user.username);
-
-    // 11. Return response
-    res.json({
-      success: true,
-      stats: {
-        totalWins: user.totalWins,
-        totalLosses: user.totalLosses,
-        currentStreak: user.currentStreak,
-        bestStreak: user.bestStreak,
-        winRate: (
-          (user.totalWins / (user.totalWins + user.totalLosses)) *
-          100
-        ).toFixed(1),
-      },
-      newAchievements, // Array of newly unlocked achievements
-      rank: rank + 1, // Redis ranks are 0-indexed
-      totalAchievements: user.unlockedAchievements.length,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to end game" });
+    console.log(error);
+
+    res.status(400).json({
+      status: "success",
+      message: "An error occurred!",
+    });
   }
-};
-
- */
-
-// exports.createWordWithAI = async (req, res, next) => {
-//   try {
-//     const result = await generateWordPerCategory();
-
-//     res.status(200).json({
-//       status: "success",
-//       message: "Words generated successfully",
-//       data: result,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(400).json({
-//       status: "fail",
-//       message: error.message,
-//     });
-//   }
-// });
+});

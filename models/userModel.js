@@ -51,6 +51,18 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  rank: {
+    type: Number,
+    default: 0,
+  },
+  score: {
+    type: Number,
+    default: 0,
+  },
+  winRate: {
+    type: Number,
+    default: 0,
+  },
 
   // achievements
   unlockedAchievements: [
@@ -121,6 +133,12 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.pre("save", async function (next) {
+  this.score =
+    this.totalWins * 15 + (this.unlockedAchievements?.length || 0) * 5;
+  next();
+});
+
 // comparing passwords
 userSchema.methods.correctPassword = async function (
   candidatePassword,
@@ -130,4 +148,7 @@ userSchema.methods.correctPassword = async function (
 };
 
 const User = mongoose.model("User", userSchema);
+
+User.collection.createIndex({ score: -1 });
+
 module.exports = User;
