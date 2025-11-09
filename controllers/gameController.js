@@ -20,7 +20,7 @@ exports.createWord = async (req, res, next) => {
   next();
 };
 
-exports.createGame = AsyncHandler(async (req, res, next) => {
+exports.startGame = AsyncHandler(async (req, res, next) => {
   console.log(req);
   const { category } = req.query;
 

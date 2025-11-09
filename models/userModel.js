@@ -85,8 +85,8 @@ const userSchema = new mongoose.Schema({
       animal: { type: Number, default: 0 },
       sports: { type: Number, default: 0 },
       movies: { type: Number, default: 0 },
-      science: { type: Number, default: 0 }, // Add this
-      history: { type: Number, default: 0 }, // Add this
+      science: { type: Number, default: 0 },
+      history: { type: Number, default: 0 },
       tv_shows: { type: Number, default: 0 },
       countries: { type: Number, default: 0 },
       capital_cities: { type: Number, default: 0 },

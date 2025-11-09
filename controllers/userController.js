@@ -2,8 +2,7 @@ const User = require("../models/userModel");
 
 exports.getMyProfile = async (req, res, next) => {
   try {
-    // Assuming you have auth middleware that sets req.user
-    const user = await User.findById(req.user.id); // it is actually meant to be req.user.id
+    const user = await User.findById(req.user.id);
 
     if (!user) {
       return res.status(400).json({
