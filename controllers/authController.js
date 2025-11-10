@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 const AsyncHandler = require("express-async-handler");
+const { sendEmail } = require("../services/email");
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET_KEY, {
@@ -16,7 +17,7 @@ const createSendToken = (user, statusCode, res) => {
   const cookieOptions = {
     httpOnly: true,
     expires: new Date(Date.now() + cookieExpireDays * 24 * 60 * 60 * 1000),
-    secure: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
     maxAge: cookieExpireDays * 24 * 60 * 60 * 1000,
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   };
@@ -33,9 +34,12 @@ const createSendToken = (user, statusCode, res) => {
 
 exports.signUp = async (req, res) => {
   try {
-    console.log(req.body);
-
     const user = await User.create(req.body);
+
+    sendEmail(user.email, user.username, "Welcome to Hangman game!").catch(
+      (err) => console.error("Email error:", err)
+    );
+
     createSendToken(user, 201, res);
   } catch (error) {
     console.error(error);
@@ -43,62 +47,41 @@ exports.signUp = async (req, res) => {
       status: "fail",
       message: error.message,
     });
-    1;
   }
 };
 
-exports.login = async (req, res, next) => {
+exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({
         status: "fail",
-        message: "kindly provide an email & password",
+        message: "Please provide username and password",
       });
     }
 
     const user = await User.findOne({ username }).select("+password");
 
     if (!user || !(await user.correctPassword(password, user.password))) {
-      return res.status(400).json({
+      return res.status(401).json({
         status: "fail",
-        message: "your password is not correct",
+        message: "Incorrect username or password",
       });
     }
 
     createSendToken(user, 200, res);
   } catch (error) {
-    console.log(error);
-    res.status(400).json({
-      status: "fail",
-      message: error.message,
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "Something went wrong",
     });
   }
 };
 
-/* 
-
-
-
-Decode the token to extract the user’s ID.
-
-Find the user in the database using that ID.
-
-Check if the user still exists and hasn’t been deleted.
-
-Grant access by attaching the user to the request and calling the next function.
-
-Deny access if any check fails.
-*/
-
-// 1)Create a middleware that runs before protected routes.
-
 exports.protectedRoutes = AsyncHandler(async (req, res, next) => {
-  // 1) Check for a token (from cookie or authorization header).
   let token;
-
-  console.log(req.headers.authorization);
 
   if (
     req.headers.authorization &&
@@ -108,16 +91,14 @@ exports.protectedRoutes = AsyncHandler(async (req, res, next) => {
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
   }
-  console.log(token);
 
   if (!token) {
-    return res.status(400).json({
+    return res.status(401).json({
       status: "fail",
-      message: "kindly log back in",
+      message: "You are not logged in. Please log in to get access.",
     });
   }
 
-  // 2)Verify the token’s validity using your secret key.
   const decoded = await promisify(jwt.verify)(
     token,
     process.env.JWT_SECRET_KEY
@@ -126,32 +107,25 @@ exports.protectedRoutes = AsyncHandler(async (req, res, next) => {
   const currentUser = await User.findById(decoded.id);
 
   if (!currentUser) {
-    return res.status(400).json({
+    return res.status(401).json({
       status: "fail",
-      message: "The user does not longer exist.",
+      message: "The user no longer exists. Please log in again.",
     });
   }
 
-  console.log(req.user);
-
   req.user = currentUser;
-
   next();
 });
 
-exports.loggedOut = AsyncHandler(async (req, res, next) => {
-  try {
-    res.clearCookie("jwt");
+exports.loggedOut = AsyncHandler(async (req, res) => {
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
 
-    res.status(200).json({
-      status: "success",
-      message: "logged out successfully",
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(400).json({
-      status: "failed!",
-      message: error.message,
-    });
-  }
+  res.status(200).json({
+    status: "success",
+    message: "Logged out successfully",
+  });
 });

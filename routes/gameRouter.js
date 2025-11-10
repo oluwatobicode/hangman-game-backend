@@ -11,6 +11,5 @@ router.post(
   gameController.leaderboard
 );
 router.post("/end", authController.protectedRoutes, gameController.endGame);
-// router.post("/ai-generate-word", wordsController.getWordByCategory);
 
 module.exports = router;

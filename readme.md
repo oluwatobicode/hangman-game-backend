@@ -174,19 +174,6 @@ This script reads `data/achievements.js` and inserts them into MongoDB. Ensure `
 
 Important: `services/aiGenWord.js` expects `OPENAI_API_KEY`. The cron loader requires the generator module; verify the imported symbol is a function (the file imports / usage has a small mismatch in `cron/wordGenerator.js` where the `require` result may not be destructured). Review before running in production.
 
-## Known issues & notes
-
-- `models/wordsModel.js` uses category names like `"animals"` and `"tv-shows"` while the AI prompt uses slightly different category names (e.g. `"tv shows"` vs `"tv-shows"`). When importing AI-generated words, normalize category strings to match the schema.
-- `userController.updateSettings` expects `req.params.id` but the route registers `PATCH '/'` with no id — this will likely fail. Either change the route to `PATCH '/:id'` or change the controller to use `req.user.id`.
-
-- `services/email.js` is present but empty — sign-up mentions sending a welcome email; you'll need to implement this if desired.
-- Cron/AI generator code logs results but currently does not persist generated words (insertion is commented out).
-- The `cron/wordGenerator.js` imports the AI generator without destructuring; if the generator exports an object, calling it directly will fail. See `services/aiGenWord.js` which uses `module.exports = { generateWordPerCategory }` — require usage should match that export.
-
-## Tests
-
-There are no automated tests in the repository. Add unit and integration tests for controllers, auth flows, and achievement logic. Use Jest or Mocha + Supertest for endpoint tests.
-
 ## Contributing
 
 1. Fork the repo
