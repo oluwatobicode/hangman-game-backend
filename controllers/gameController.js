@@ -28,7 +28,7 @@ exports.startGame = AsyncHandler(async (req, res, next) => {
     const count = await Words.countDocuments({ category });
 
     if (count === 0) {
-      res.status(400).json({
+      res.status(500).json({
         status: "fail",
         message: "there was no word found for this category",
       });
@@ -253,7 +253,7 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
   } catch (error) {
     console.log(error);
 
-    res.status(400).json({
+    res.status(500).json({
       status: "failed",
       message: "failed to end game, try again!",
     });
@@ -285,9 +285,9 @@ exports.leaderboard = AsyncHandler(async (req, res) => {
   } catch (error) {
     console.log(error);
 
-    res.status(400).json({
+    res.status(500).json({
       status: "success",
-      message: "An error occurred!",
+      message: "Something went wrong!, try again later",
     });
   }
 });

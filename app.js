@@ -25,7 +25,7 @@ app.use(
   cors({
     origin: [
       "https://hangman-game-frontend.vercel.app",
-      "http://localhost:3000",
+      "https://hangman-game-backend-85n0.onrender.com",
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
@@ -61,6 +61,15 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use(cookieParser());
+
+/* this handles global errors */
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+
+  res.status(500).json({
+    error: "Something went wrong!, try again later",
+  });
+});
 
 /* this are my routes */
 

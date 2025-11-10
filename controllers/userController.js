@@ -18,7 +18,7 @@ exports.getMyProfile = async (req, res, next) => {
   } catch (error) {
     res.status(400).json({
       status: "fail",
-      message: error.message,
+      message: "Something went wrong!, try again later",
     });
   }
 };
@@ -44,7 +44,7 @@ exports.getSettings = async (req, res, next) => {
     console.log(error);
     res.status(400).json({
       status: "fail",
-      message: error.message,
+      message: "Something went wrong!, try again later",
     });
   }
 };
@@ -83,7 +83,7 @@ exports.updateSettings = async (req, res) => {
     console.log(error);
     res.status(400).json({
       status: "fail",
-      message: error.message,
+      message: "Something went wrong!, try again later",
     });
   }
 };
