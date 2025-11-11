@@ -16,6 +16,8 @@ exports.getMyProfile = async (req, res, next) => {
       data: { user },
     });
   } catch (error) {
+    console.error("Error fetching user profile:", error);
+
     res.status(400).json({
       status: "fail",
       message: "Something went wrong!, try again later",
@@ -41,7 +43,7 @@ exports.getSettings = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching user settings:", error);
     res.status(400).json({
       status: "fail",
       message: "Something went wrong!, try again later",
@@ -80,7 +82,7 @@ exports.updateSettings = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    console.error("Error updating user settings:", error);
     res.status(400).json({
       status: "fail",
       message: "Something went wrong!, try again later",

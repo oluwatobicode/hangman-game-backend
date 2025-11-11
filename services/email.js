@@ -1,12 +1,11 @@
 const resend = require("resend");
+
 require("dotenv").config({ path: "./config.env" });
 
 const resendClient = new resend.Resend(process.env.RESEND_EMAIL);
 
 exports.sendEmail = async (email, username, subject) => {
   try {
-    console.log(email, username, subject);
-
     resendClient.emails.send({
       from: "Coding Ninja 🥷🏾 <onboarding@resend.dev>",
       to: [email],

@@ -21,7 +21,6 @@ exports.createWord = async (req, res, next) => {
 };
 
 exports.startGame = AsyncHandler(async (req, res, next) => {
-  console.log(req);
   const { category } = req.query;
 
   try {
@@ -58,15 +57,13 @@ exports.startGame = AsyncHandler(async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   next();
 });
 
 const checkAchievements = async (user, gameData) => {
-  console.log("Checking achievements for user:", user.username);
-
   const allAchievements = await Achievements.find({ isActive: true });
   const newlyUnlocked = [];
 
@@ -77,7 +74,6 @@ const checkAchievements = async (user, gameData) => {
     );
 
     if (alreadyHas) {
-      console.log(`Achievement ${achievement.name} already unlocked`);
       continue;
     }
 
@@ -149,8 +145,6 @@ const checkAchievements = async (user, gameData) => {
         rarity: achievement.rarity,
         points: achievement.points,
       });
-
-      console.log(`✨ New achievement unlocked: ${achievement.name}`);
     }
   }
 
@@ -161,20 +155,10 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
   try {
     const { won, usedHint, wrongGuesses, duration, gameData } = req.body;
 
-    console.log(usedHint);
-
-    console.log("hi", req.body.usedHint);
-
     const userId = req.user.id;
-
-    console.log("the user id", userId);
 
     // 1) get user
     const user = await User.findById(userId);
-
-    console.log("the user has been found", user);
-
-    console.log(won);
 
     // 2) update user stats
     if (won) {
@@ -190,12 +174,8 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
       user.achievementProgress.categoryWins[gameData.category] =
         (user.achievementProgress.categoryWins[gameData.category] || 0) + 1;
 
-      // console.log("test", gameData);
-
       user.achievementProgress.difficultyWins[gameData.difficulty] =
         (user.achievementProgress.difficultyWins[gameData.difficulty] || 0) + 1;
-
-      console.log("Hint used", usedHint);
 
       if (!usedHint) {
         user.achievementProgress.gamesWithoutHint += 1;
@@ -216,7 +196,6 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
       ).toFixed(1);
     }
 
-    console.log("hi i am reaching here");
     // 3) check for new achievements
     const newAchievements = await checkAchievements(user, {
       won,
@@ -230,8 +209,6 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
     //   $inc: { usedCount: 1 },
     //   lastUsedAt: new Date(),
     // });
-
-    console.log("these are it", newAchievements);
 
     // 3) save
     await user.save();
@@ -251,7 +228,7 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
       totalAchievements: user.unlockedAchievements.length,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     res.status(500).json({
       status: "failed",
@@ -283,7 +260,7 @@ exports.leaderboard = AsyncHandler(async (req, res) => {
       }
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     res.status(500).json({
       status: "success",

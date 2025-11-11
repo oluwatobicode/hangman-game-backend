@@ -1,5 +1,4 @@
 const Achievement = require("../models/achievementModel");
-const AsyncHandler = require("express-async-handler");
 
 exports.getAchievements = async (req, res, next) => {
   try {
@@ -13,7 +12,7 @@ exports.getAchievements = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     res.status(500).json({
       status: "failed",
