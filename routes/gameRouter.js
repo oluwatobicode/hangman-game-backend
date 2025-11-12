@@ -5,11 +5,9 @@ const router = express.Router();
 
 router.post("/", gameController.createWord);
 router.get("/start", authController.protectedRoutes, gameController.startGame);
-router.post(
-  "/leaderboard",
-  authController.protectedRoutes,
-  gameController.leaderboard
-);
 router.post("/end", authController.protectedRoutes, gameController.endGame);
+
+// leaderboard route
+router.get("/", authController.protectedRoutes, gameController.leaderboard);
 
 module.exports = router;

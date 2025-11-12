@@ -33,10 +33,9 @@ exports.startGame = AsyncHandler(async (req, res, next) => {
       });
     }
 
-    // this would helping in getting a random word using aggregation
     const [word] = await Words.aggregate([
       { $match: { category } },
-      { $sample: { size: 1 } }, // this is MongoDB's random selector
+      { $sample: { size: 1 } },
     ]);
 
     // Update usage stats
@@ -239,25 +238,45 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
 
 exports.leaderboard = AsyncHandler(async (req, res) => {
   try {
+    const currentUserId = req.user.id;
+
     const allUsers = await User.find({})
       .sort({
         score: -1,
         totalWins: -1,
       })
-      .select("username rank score totalWins")
+      .select("username score totalWins")
       .lean();
 
+    // console.log(allUsers);
+
     let currentRank = 1;
+
     const rankedUsers = allUsers.map((user, index) => {
       if (
         index > 0 &&
         user.score === allUsers[index - 1].score &&
         user.totalWins === allUsers[index - 1].totalWins
       ) {
-        currentRank = index - 1;
       } else {
         currentRank = index + 1;
       }
+
+      return {
+        ...user,
+        rank: currentRank,
+        isCurrentUser: user._id.toString() === currentUserId,
+      };
+    });
+
+    console.log(rankedUsers);
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        users: rankedUsers,
+        totalUsers: rankedUsers.length,
+      },
     });
   } catch (error) {
     console.error(error);
