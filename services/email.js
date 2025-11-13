@@ -7,7 +7,7 @@ const resendClient = new resend.Resend(process.env.RESEND_EMAIL);
 exports.sendEmail = async (email, username, subject) => {
   try {
     resendClient.emails.send({
-      from: "Coding Ninja 🥷🏾 <onboarding@resend.dev>",
+      from: "Coding Ninja 🥷🏾 <thehangmangame@oluwatobii.xyz>",
       to: [email],
       subject: subject,
       html: `
