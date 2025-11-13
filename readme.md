@@ -190,12 +190,4 @@ ISC
 
 ## Contact / Support
 
-If you need help wiring the front-end to these endpoints, adding tests, or making the AI generation robust, I can implement the changes. Suggested next steps:
-
-- Fix the route/controller mismatch for settings
-- Ensure AI generator normalizes category names and inserts into DB
-
-- Implement `services/email.js` for welcome emails
-- Add endpoint tests for auth, game creation, and end-of-game logic
-
 ---
