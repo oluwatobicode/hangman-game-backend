@@ -23,13 +23,8 @@ const app = express();
 // this is for handling CORS
 app.use(
   cors({
-    origin: [
-      // "https://hangman-game-frontend.vercel.app",
-      // "https://hangman-game-backend-85n0.onrender.com",
-      "http://localhost:5173/",
-    ],
-
-    // credentials: true,
+    origin: "*", // ⚠️ Only for development! Not secure for production
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
