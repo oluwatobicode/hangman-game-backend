@@ -23,7 +23,7 @@ const app = express();
 // this is for handling CORS
 app.use(
   cors({
-    origin: "*", // ⚠️ Only for development! Not secure for production
+    origin: "http://localhost:5173", // ⚠️ Only for development! Not secure for production
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
