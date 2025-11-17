@@ -26,6 +26,7 @@ app.use(
     origin: [
       "https://hangman-game-frontend.vercel.app",
       "https://hangman-game-backend-85n0.onrender.com",
+      "*",
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
