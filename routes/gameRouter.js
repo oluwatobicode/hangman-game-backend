@@ -8,6 +8,6 @@ router.get("/start", authController.protectedRoutes, gameController.startGame);
 router.post("/end", authController.protectedRoutes, gameController.endGame);
 
 // leaderboard route
-router.get("/", authController.protectedRoutes, gameController.leaderboard);
+router.get("/", gameController.leaderboard);
 
 module.exports = router;
