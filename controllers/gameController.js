@@ -273,7 +273,7 @@ exports.leaderboard = AsyncHandler(async (req, res) => {
 
     res.status(200).json({
       status: "success",
-      data: {
+      Leaderboard: {
         users: rankedUsers,
         totalUsers: rankedUsers.length,
       },
