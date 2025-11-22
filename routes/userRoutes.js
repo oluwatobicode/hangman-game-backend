@@ -6,7 +6,7 @@ const router = express.Router();
 
 // user-profile-section
 router.get(
-  "/:userID/profile",
+  "/profile",
   authController.protectedRoutes,
   userController.getMyProfile
 );
