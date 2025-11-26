@@ -57,10 +57,6 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  rank: {
-    type: Number,
-    default: 0,
-  },
   score: {
     type: Number,
     default: 0,
@@ -71,11 +67,12 @@ const userSchema = new mongoose.Schema({
   },
 
   // achievements
+  // In userModel.js
   unlockedAchievements: [
     {
       achievementId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Achievement",
+        ref: "Achievement", // This will reference the _id field
       },
       unlockedAt: {
         type: Date,

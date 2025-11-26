@@ -132,12 +132,12 @@ const checkAchievements = async (user, gameData) => {
 
     if (unlocked) {
       user.unlockedAchievements.push({
-        achievementId: achievement._id,
+        achievementId: achievement._id, // Use _id, not achievementId
         unlockedAt: new Date(),
       });
 
       newlyUnlocked.push({
-        achievementId: achievement.achievementId,
+        achievementId: achievement._id, // Use _id here too
         name: achievement.name,
         description: achievement.description,
         icon: achievement.icon,
@@ -157,7 +157,9 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
     const userId = req.user.id;
 
     // 1) get user
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate(
+      "unlockedAchievements.achievementId"
+    );
 
     // 2) update user stats
     if (won) {
@@ -211,6 +213,9 @@ exports.endGame = AsyncHandler(async (req, res, next) => {
 
     // 3) save
     await user.save();
+
+    // 5) Populate achievements after saving to get full data
+    await user.populate("unlockedAchievements.achievementId");
 
     res.status(200).json({
       status: "success",
