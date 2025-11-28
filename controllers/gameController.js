@@ -137,7 +137,7 @@ const checkAchievements = async (user, gameData) => {
       });
 
       newlyUnlocked.push({
-        achievementId: achievement._id, // Use _id here too
+        achievementId: achievement.achievementId,
         name: achievement.name,
         description: achievement.description,
         icon: achievement.icon,
