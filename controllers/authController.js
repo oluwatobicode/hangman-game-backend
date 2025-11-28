@@ -42,10 +42,42 @@ exports.signUp = async (req, res) => {
 
     createSendToken(user, 201, res);
   } catch (error) {
-    console.error(error);
+    // Handle duplicate key errors (username or email already exists)
+    if (error.code === 11000) {
+      const duplicateField = Object.keys(error.keyPattern || {})[0];
+      const fieldName = duplicateField === "username" ? "username" : "email";
+
+      return res.status(409).json({
+        status: "fail",
+        message: `This ${fieldName} is already taken. Please use a different ${fieldName}.`,
+      });
+    }
+
+    // Handle validation errors from Mongoose
+    if (error.name === "ValidationError") {
+      const validationErrors = Object.values(error.errors).map(
+        (err) => err.message
+      );
+
+      return res.status(400).json({
+        status: "fail",
+        message: validationErrors.join(", "),
+      });
+    }
+
+    // Handle other known errors
+    if (error.name === "MongoError" || error.name === "MongoServerError") {
+      return res.status(400).json({
+        status: "fail",
+        message: "Database error occurred. Please try again.",
+      });
+    }
+
+    // Generic error handler for unexpected errors
+    console.error("SignUp Error:", error);
     res.status(500).json({
-      status: "fail",
-      message: "Something went wrong!, try again later",
+      status: "error",
+      message: "Something went wrong. Please try again later.",
     });
   }
 };

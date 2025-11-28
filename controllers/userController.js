@@ -2,7 +2,9 @@ const User = require("../models/userModel");
 
 exports.getMyProfile = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).populate(
+      "unlockedAchievements.achievementId"
+    );
 
     if (!user) {
       return res.status(400).json({

@@ -66,10 +66,25 @@ const checkAchievements = async (user, gameData) => {
   const allAchievements = await Achievements.find({ isActive: true });
   const newlyUnlocked = [];
 
+  // Get list of achievement IDs user already has (handle both populated and unpopulated)
+  const unlockedAchievementIds = user.unlockedAchievements
+    .map((a) => {
+      // If populated, achievementId is an object with _id, otherwise it's an ObjectId
+      if (
+        a.achievementId &&
+        typeof a.achievementId === "object" &&
+        a.achievementId._id
+      ) {
+        return a.achievementId._id.toString();
+      }
+      return a.achievementId?.toString();
+    })
+    .filter(Boolean); // Filter out any undefined/null values
+
   for (const achievement of allAchievements) {
     // Check if user already has this achievement
-    const alreadyHas = user.unlockedAchievements.some(
-      (a) => a.achievementId.toString() === achievement._id.toString()
+    const alreadyHas = unlockedAchievementIds.includes(
+      achievement._id.toString()
     );
 
     if (alreadyHas) {
@@ -132,7 +147,7 @@ const checkAchievements = async (user, gameData) => {
 
     if (unlocked) {
       user.unlockedAchievements.push({
-        achievementId: achievement._id, // Use _id, not achievementId
+        achievementId: achievement._id,
         unlockedAt: new Date(),
       });
 
